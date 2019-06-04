@@ -1,3 +1,6 @@
+import com.netflix.gradle.plugins.deb.Deb
+import com.netflix.gradle.plugins.packaging.CopySpecEnhancement
+import org.ajoberstar.grgit.Configurable
 import org.ajoberstar.grgit.Grgit
 import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -17,6 +20,7 @@ plugins {
     id("org.asciidoctor.jvm.convert") version "2.2.0"
     id("org.asciidoctor.jvm.pdf") version "2.2.0"
     id("org.asciidoctor.jvm.epub") version "2.2.0"
+    id("nebula.deb") version "6.2.1"
     idea
     application
 }
@@ -216,18 +220,39 @@ val compileDeb by tasks.creating(Exec::class) {
     args("-uc", "-us")
 }
 
-val distDeb by tasks.creating(Copy::class) {
-    group = "distribution"
-    dependsOn(compileDeb)
+fun perm(owner: Byte, group: Byte, others: Byte): Int {
+    return (owner.toInt() shl 6) or (group.toInt() shl 3) or (others.toInt() shl 0)
+}
 
-    from("$buildDir/debPackage") {
-        include("*.deb")
+val distLfsDeb by tasks.creating(Deb::class) {
+    packageName = "git-as-svn-lfs"
+
+    user = "root"
+    permissionGroup = "root"
+
+    // See https://github.com/nebula-plugins/gradle-ospackage-plugin/issues/59#issuecomment-128718128
+    directory("/etc/git-as-svn", perm(7, 5, 5), "root", "root")
+
+    into("/etc/git-as-svn") {
+        from("tools") {
+            include("*.cfg")
+            fileMode = perm(6, 4, 0)
+            CopySpecEnhancement.addParentDirs(this, false)
+            CopySpecEnhancement.permissionGroup(this, "git")
+        }
     }
-    into("$buildDir/distributions")
+
+    into("/usr/bin") {
+        from("tools") {
+            fileMode = perm(7, 5, 5)
+
+            include("git-lfs-authenticate")
+        }
+    }
 }
 
 tasks.assembleDist {
-    dependsOn(distDeb)
+    dependsOn(distLfsDeb)
 }
 
 tasks.distZip {
@@ -247,5 +272,5 @@ fun createLauncherClassPath(): String {
 }
 
 fun getCommitDateTime(): ZonedDateTime {
-    return Grgit.open(mapOf("dir" to projectDir)).head().dateTime
+    return Grgit.open(Configurable { dir = projectDir }).head().dateTime
 }
