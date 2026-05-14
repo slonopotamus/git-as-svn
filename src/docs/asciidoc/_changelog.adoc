@@ -6,6 +6,10 @@ ifdef::sectnums[]
 endif::[]
 :sectnums!:
 
+== Unreleased
+
+* Add `svn:externals` support
+
 == 4.3.0
 
 * Fix sparse checkout when directory with empty depth has nested children with non-empty depth

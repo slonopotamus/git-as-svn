@@ -28,11 +28,6 @@ import java.util.regex.PatternSyntaxException
  * @author Artem V. Navrotskiy <bozaro@users.noreply.github.com>
  */
 class GitAttributesFactory : GitPropertyFactory {
-    override val fileName: String
-        get() {
-            return ".gitattributes"
-        }
-
     @Throws(IOException::class)
     override fun create(stream: InputStream, format: RepositoryFormat, stringInterner: (String) -> String): Array<GitProperty> {
         val r = AttributesNode()

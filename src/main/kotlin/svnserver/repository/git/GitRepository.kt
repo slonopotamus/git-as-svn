@@ -55,6 +55,7 @@ class GitRepository(
 ) : AutoCloseable, BranchProvider {
     val git: Repository
     val pusher: GitPusher
+    val propertyMapping = PropertyMapping(format > RepositoryFormat.V6_ADD_SVN_EXTERNALS)
     private val binaryCache: HTreeMap<String, Boolean>
     private val gitFilters: GitFilters
     private val directoryPropertyCache = ConcurrentHashMap<ObjectId, Array<GitProperty>>()
@@ -117,7 +118,7 @@ class GitRepository(
 
     @Throws(IOException::class)
     private fun parseGitProperty(fileName: String, objectId: GitObject<ObjectId>): Array<GitProperty> {
-        val factory: GitPropertyFactory = PropertyMapping.getFactory(fileName) ?: return GitProperty.emptyArray
+        val factory: GitPropertyFactory = propertyMapping.getFactory(fileName) ?: return GitProperty.emptyArray
         return cachedParseGitProperty(objectId, factory)
     }
 

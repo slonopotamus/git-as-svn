@@ -22,7 +22,6 @@ import svnserver.StringHelper
 import svnserver.auth.User
 import svnserver.repository.Depth
 import svnserver.repository.VcsConsumer
-import svnserver.repository.git.prop.PropertyMapping
 import svnserver.repository.git.push.GitPusher
 import svnserver.repository.locks.LockDesc
 import svnserver.repository.locks.LockStorage
@@ -103,7 +102,7 @@ class GitWriter internal constructor(val branch: GitBranch, private val pusher: 
         }
     }
 
-    private class GitPropertyValidator(root: GitFile) : CommitAction(root) {
+    private class GitPropertyValidator(val root: GitFile) : CommitAction(root) {
         private val propertyMismatch = TreeMap<String, MutableSet<String>>()
         private var errorCount = 0
 
@@ -162,7 +161,7 @@ class GitWriter internal constructor(val branch: GitBranch, private val pusher: 
 
                 message.append("\n----------------\nSubversion properties must be consistent with Git config files:\n")
 
-                for (configFile: String? in PropertyMapping.registeredFiles) {
+                for (configFile: String? in root.branch.repository.propertyMapping.registeredFiles) {
                     message.append("  $configFile\n")
                 }
 
