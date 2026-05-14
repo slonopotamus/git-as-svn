@@ -10,6 +10,7 @@ package svnserver.repository.git
 enum class RepositoryFormat(val revision: Int) {
     V4(4),
     V5_REMOVE_IMPLICIT_NATIVE_EOL(5),
-    V6_ADD_SVN_EXTERNALS(6),
-    Latest(V6_ADD_SVN_EXTERNALS.revision),
+    V6_ADD_SVN_EXTERNALS(6)
 }
+
+val RepositoryFormatLatest = RepositoryFormat.V6_ADD_SVN_EXTERNALS

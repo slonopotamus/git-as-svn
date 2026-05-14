@@ -37,7 +37,7 @@ class GitRepositoryConfig private constructor(private val createMode: GitCreateM
     private var pusher: GitPusherConfig = GitPushEmbeddedConfig.instance
     private var renameDetection: Boolean = true
     private var emptyDirs: EmptyDirsSupport = EmptyDirsSupport.Disabled
-    private var format = RepositoryFormat.Latest
+    private var format = RepositoryFormatLatest
     private var gitTreeEntryCacheStrategy: GitTreeEntryCacheStrategy = GitTreeEntryCacheStrategy.None
 
     @JvmOverloads

@@ -55,7 +55,7 @@ class GitRepository(
 ) : AutoCloseable, BranchProvider {
     val git: Repository
     val pusher: GitPusher
-    val propertyMapping = PropertyMapping(format > RepositoryFormat.V6_ADD_SVN_EXTERNALS)
+    val propertyMapping = PropertyMapping(format >= RepositoryFormat.V6_ADD_SVN_EXTERNALS)
     private val binaryCache: HTreeMap<String, Boolean>
     private val gitFilters: GitFilters
     private val directoryPropertyCache = ConcurrentHashMap<ObjectId, Array<GitProperty>>()
